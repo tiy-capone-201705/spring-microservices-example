@@ -48,7 +48,7 @@
 						<tr ng-repeat="task in dashboard.tasks">
 							<td>{{task.name}}</td>
 							<td>{{task.type}}</td>
-							<td><span class="chip" ng-class="task.status | lowercase">{{task.status}}</span></td>
+							<td><span class="chip" ng-class="task.status | lowercase">{{task.status | humanify}}</span></td>
 							<td>{{task.created | date:'MMM dd'}}<br>{{task.created | date:'h:mm a'}}</td>
 						</tr>
 					</tbody>			

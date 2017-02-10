@@ -35,9 +35,25 @@ option[disabled] {
 	border: 1px solid transparent;
 	border-radius: 4px;
 	padding: 4px;
+	white-space: nowrap;
 }
 
 .chip.created {
 	background-color: #eeeeee;
 	border-color: #bdbdbd;
+}
+
+.chip.in_progress {
+	background-color: #b3e5fc;
+	border-color: #4fc3f7;
+}
+
+.chip.completed {
+	background-color: #c8e6c9;
+	border-color: #81c784;
+}
+
+.chip.error {
+	background-color: #ffcdd2;
+	border-color: #e57373;
 }
