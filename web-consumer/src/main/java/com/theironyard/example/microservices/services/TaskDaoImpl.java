@@ -5,13 +5,18 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.beans.factory.config.BeanDefinition;
 
 import com.theironyard.example.microservices.models.Task;
 
 @Service
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 class TaskDaoImpl implements TaskDao {
 	private EntityManagerFactory factory;
+	private EntityManager manager;
 	
 	public TaskDaoImpl(EntityManagerFactory factory) {
 		this.factory = factory;
@@ -19,10 +24,7 @@ class TaskDaoImpl implements TaskDao {
 	
 	@Override
 	public Task save(Task task) {
-		EntityManager manager = factory.createEntityManager();
-		manager.getTransaction().begin();
 		task = manager.merge(task);
-		manager.getTransaction().commit();
 		return task;
 	}
 
@@ -30,5 +32,21 @@ class TaskDaoImpl implements TaskDao {
 	public List<Task> all() {
 		EntityManager manager = factory.createEntityManager();
 		return manager.createQuery("from Task", Task.class).getResultList();
+	}
+	
+	@Override
+	public void update(Task task) {
+		save(task);
+	}
+	
+	@Override
+	public void beginTransaction() {
+		manager = factory.createEntityManager();
+		manager.getTransaction().begin();
+	}
+	
+	@Override
+	public void commitTransaction() {
+		manager.getTransaction().commit();
 	}
 }

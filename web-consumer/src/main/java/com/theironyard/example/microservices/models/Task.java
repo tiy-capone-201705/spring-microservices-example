@@ -24,6 +24,7 @@ public class Task {
 	
 	private TaskStatus status;
 	private TaskType type;
+	private String restStatusUrl;
 	
 	public Task() {
 		this.created = new Date();
@@ -92,5 +93,13 @@ public class Task {
 
 	public void setType(TaskType type) {
 		this.type = type;
+	}
+
+	public String getRestStatusUrl() {
+		return restStatusUrl;
+	}
+
+	public void setRestStatusUrl(String restStatusUrl) {
+		this.restStatusUrl = restStatusUrl;
 	}
 }
