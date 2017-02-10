@@ -1,0 +1,62 @@
+<div class="pure-g">
+	<section class="pure-u-1-3">
+		<form class="pure-form" id="task-maker">
+			<fieldset>
+				<legend>Make busy work</legend>
+				
+				<div class="pure-g">
+					<div class="pure-u-1">
+						<select ng-model="dashboard.taskType" class="pure-u-23-24">
+							<option value="" disabled>Choose a task type</option>
+				            <option value="EVENTED">Evented</option>
+				            <option value="RESTFUL">RESTful</option>
+				            <option value="BOTH">Both</option>
+				            <option value="NONE">None</option>
+				        </select>
+					</div>
+					<div class="pure-u-1 pure-group">
+						<input ng-model="dashboard.taskName" type="text" placeholder="Task name" class="pure-u-23-24">
+						<input ng-model="dashboard.amount" type="number" placeholder="Amount" class="pure-u-23-24">
+						<textarea ng-model="dashboard.description" placeholder="Description" class="pure-u-23-24"></textarea>
+					</div>
+				</div>
+				
+				<button ng-disabled="!dashboard.isValid()" ng-click="dashboard.makeTask()" class="pure-button pure-button-primary">Create task</button>
+			</fieldset>
+		</form>		
+	</section>
+	<section id="task-list" class="pure-u-2-3">
+		<header>
+			<h1>Work</h1>
+			<div ng-if="dashboard.isLoading">
+				Loading...
+			</div>
+			<div ng-if="dashboard.hasNoTasks">
+				Create a task...
+			</div>
+			<div ng-if="dashboard.hasTasks">
+				<table class="pure-table pure-table-horizontal">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Type</th>
+							<th>Status</th>
+							<th>Created On</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="task in dashboard.tasks">
+							<td>{{task.name}}</td>
+							<td>{{task.type}}</td>
+							<td><span class="chip" ng-class="task.status | lowercase">{{task.status}}</span></td>
+							<td>{{task.created | date:'MMM dd'}}<br>{{task.created | date:'h:mm a'}}</td>
+						</tr>
+					</tbody>			
+				</table>
+			</div>
+			<div ng-if="dashboard.hasError">
+				{{dashboard.error}}
+			</div>
+		</header>
+	</section>
+</div>
