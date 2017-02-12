@@ -4,9 +4,12 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/microweb
+    # url: jdbc:h2:mem:testdb
   jpa:
     hibernate:
       ddl-auto: create
 
 services:
-  rest: http://localhost:10001/tasks
+  rest: 
+    server: http://localhost:10001
+    createPath: /tasks

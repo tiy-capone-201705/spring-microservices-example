@@ -23,6 +23,18 @@
 				});
 		}
 		
+		refreshTask(id) {
+			this.$http
+				.get('/tasks/' + id)
+				.then(response => {
+					for (let i = 0; i < this.tasks.length; i += 1) {
+						if (this.tasks[i].id === id) {
+							return this.tasks[i] = response.data;
+						}
+					}
+				});
+		}
+		
 		resetForm() {
 			this.taskName = null;
 			this.amount = null;

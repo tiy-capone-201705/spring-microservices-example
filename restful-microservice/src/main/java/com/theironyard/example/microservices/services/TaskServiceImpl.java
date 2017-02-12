@@ -20,11 +20,14 @@ public class TaskServiceImpl implements TaskService {
 		manager.getTransaction().begin();
 		Task task = manager.merge(new Task(remoteId));
 		manager.getTransaction().commit();
+		manager.close();
 		return task;
 	}
 	
 	public Task getById(Integer id) {
 		EntityManager manager = factory.createEntityManager();
-		return manager.find(Task.class, id);
+		Task task = manager.find(Task.class, id);
+		manager.close();
+		return task;
 	}
 }

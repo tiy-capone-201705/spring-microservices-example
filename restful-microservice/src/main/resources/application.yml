@@ -4,6 +4,7 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/microrest
+    # url: jdbc:h2:mem:testdb
   jpa:
     hibernate:
       ddl-auto: create

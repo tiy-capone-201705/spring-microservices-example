@@ -1,6 +1,7 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/micromq
+    # url: jdbc:h2:mem:testdb
   jpa:
     hibernate:
       ddl-auto: create

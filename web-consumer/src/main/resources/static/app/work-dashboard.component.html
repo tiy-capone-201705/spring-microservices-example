@@ -27,7 +27,7 @@
 	</section>
 	<section id="task-list" class="pure-u-2-3">
 		<header>
-			<h1>Work</h1>
+			<h1>Busy Work</h1>
 			<div ng-if="dashboard.isLoading">
 				Loading...
 			</div>
@@ -38,6 +38,7 @@
 				<table class="pure-table pure-table-horizontal">
 					<thead>
 						<tr>
+							<th></th>
 							<th>Name</th>
 							<th>Type</th>
 							<th>Status</th>
@@ -46,6 +47,9 @@
 					</thead>
 					<tbody>
 						<tr ng-repeat="task in dashboard.tasks">
+							<td>
+								<button class="pure-button" ng-if="task.status !== 'COMPLETED' && task.status !== 'ERROR'" ng-click="dashboard.refreshTask(task.id)">R</button>
+							</td>
 							<td>{{task.name}}</td>
 							<td>{{task.type}}</td>
 							<td><span class="chip" ng-class="task.status | lowercase">{{task.status | humanify}}</span></td>

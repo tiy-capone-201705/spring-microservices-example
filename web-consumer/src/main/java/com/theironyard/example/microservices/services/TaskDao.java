@@ -8,6 +8,5 @@ interface TaskDao {
 	Task save(Task task);
 	void update(Task task);
 	List<Task> all();
-	void beginTransaction();
-	void commitTransaction();
+	Task getById(Integer id);
 }

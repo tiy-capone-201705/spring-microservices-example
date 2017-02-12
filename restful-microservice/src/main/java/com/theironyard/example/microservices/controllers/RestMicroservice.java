@@ -8,6 +8,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
 import com.theironyard.example.microservices.models.Task;
@@ -26,7 +27,7 @@ public class RestMicroservice {
 	@POST
 	public Response create(Task task) {
 		task = service.handleTaskAsync(task.getRemoteId());
-		return Response.ok("/task/" + task.getId() + "/status").build();
+		return Response.ok("/tasks/" + task.getId() + "/status").build();
 	}
 	
 	@GET

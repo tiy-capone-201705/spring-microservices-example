@@ -7,6 +7,7 @@ import com.theironyard.example.microservices.models.TaskType;
 
 public interface TaskService {
 	Task create(String name, Integer amount, String description, TaskType type);
-	
+	void save(Task task);
+	Task getById(Integer id);
 	List<Task> all();
 }
