@@ -1,0 +1,36 @@
+<div class="pure-g">
+	<section id="task-list" class="pure-u-1">
+		<header>
+			<h1>Approvals</h1>
+			<div ng-if="dashboard.isLoading">
+				Loading...
+			</div>
+			<div ng-if="dashboard.hasNoTasks">
+				No unapproved tasks
+			</div>
+			<div ng-if="dashboard.hasTasks">
+				<table class="pure-table pure-table-horizontal">
+					<thead>
+						<tr>
+							<th></th>
+							<th>Name</th>
+							<th>UUID</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="task in dashboard.tasks">
+							<td>
+								<button class="pure-button" ng-click="dashboard.approveTask(task)">Approve</button>
+							</td>
+							<td>{{task.name}}</td>
+							<td>{{task.remoteId}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div ng-if="dashboard.hasError">
+				{{dashboard.error}}
+			</div>
+		</header>
+	</section>
+</div>

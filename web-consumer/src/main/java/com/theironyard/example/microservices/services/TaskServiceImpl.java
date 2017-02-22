@@ -1,27 +1,37 @@
 package com.theironyard.example.microservices.services;
 
 import java.util.List;
-
+import java.util.UUID;
 import java.util.concurrent.Future;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.stereotype.Service;
 
+import com.theironyard.example.microservices.models.ImmediateTask;
+import com.theironyard.example.microservices.models.MqTask;
+import com.theironyard.example.microservices.models.RestTaskStatusUpdateStrategyImpl;
+import com.theironyard.example.microservices.models.RestfulTask;
 import com.theironyard.example.microservices.models.Task;
 import com.theironyard.example.microservices.models.TaskStatus;
 import com.theironyard.example.microservices.models.TaskType;
 
 @Service
 public class TaskServiceImpl implements TaskService {
+	private Log log;
 	private TaskDaoFactory factory;
 	private ServicesConfigurationService servicesConfig;
+	private MqTaskPublisher publisher;
 	
-	public TaskServiceImpl(TaskDaoFactory factory, ServicesConfigurationService servicesConfig) {
+	public TaskServiceImpl(TaskDaoFactory factory, ServicesConfigurationService servicesConfig, MqTaskPublisher publisher) {
 		this.factory = factory;
 		this.servicesConfig = servicesConfig;
+		log = LogFactory.getLog(TaskServiceImpl.class);
+		this.publisher = publisher;
 	}
 	
 	public void save(Task task) {
@@ -31,23 +41,43 @@ public class TaskServiceImpl implements TaskService {
 	
 	public Task create(String name, Integer amount, String description, TaskType type) {
 		TaskDao dao = factory.create();
-		Task task = dao.save(new Task(description, name, amount, type));
+		Task newTask = null;
+		switch (type) {
+		case BOTH:
+			break;
+		case EVENTED:
+			newTask = new MqTask(name, description, amount);
+			break;
+		case NONE:
+			newTask = new ImmediateTask(name, description, amount);
+			break;
+		case RESTFUL:
+			newTask = new RestfulTask(name, description, amount);
+			break;
+		default:
+			break;
+		}
+		Task savedTask = dao.save(newTask);
 		
 		if (type.equals(TaskType.BOTH) || type.equals(TaskType.RESTFUL)) {
 			while (true) {
 				try {
-					PostToRestfulService(dao, task);
+					postToRestfulService(dao, savedTask);
 					break;
 				} catch (InterruptedException ie) {}
 			}
 		}
 		
-		if (type.equals(TaskType.NONE)) {
-			task.setStatus(TaskStatus.COMPLETED, null);
-			dao.update(task);
+		if (type.equals(TaskType.BOTH) || type.equals(TaskType.EVENTED)) {
+			publisher.publishNewTask((MqTask) savedTask);
 		}
 		
-		return task;
+		if (type.equals(TaskType.NONE)) {
+			savedTask.setStatus(TaskStatus.COMPLETED, null);
+			dao.update(savedTask);
+		}
+		
+		return savedTask;
 	}
 	
 	public List<Task> all() {
@@ -58,33 +88,43 @@ public class TaskServiceImpl implements TaskService {
 		return factory.create().getById(id);
 	}
 	
+	public Task getByUuid(UUID uuid) {
+		return factory.create().getByUuid(uuid);
+	}
+	
 	@Async
-	public Future<Integer> PostToRestfulService(TaskDao dao, Task task) throws InterruptedException {
+	public Future<Integer> postToRestfulService(TaskDao dao, Task task) throws InterruptedException {
+		if (!(task instanceof RestfulTask)) {
+			return new AsyncResult<Integer>(-1);
+		}
+		RestfulTask restfulTask = (RestfulTask) task;
 		RestTemplate template = new RestTemplate();
 		try {
 			String url = servicesConfig.restCreationPath();
-			String restStatusUrl = template.postForObject(url, new RestTask(task.getId()), String.class, new HttpHeaders());
-			task.setRestStatusUrl(servicesConfig.restAbsoluteFromRelative(restStatusUrl));
-			task.setStatus(TaskStatus.IN_PROGRESS, restStatusUrl);
+			log.info("RESTful creation path: " + url);
+			String restStatusUrl = template.postForObject(url, new RestTask(restfulTask.getUuid()), String.class, new HttpHeaders());
+			restfulTask.setRestStatusUrl(servicesConfig.restAbsoluteFromRelative(restStatusUrl));
+			restfulTask.setStatus(TaskStatus.IN_PROGRESS, restStatusUrl);
 		} catch (Exception e) {
-			task.setStatus(TaskStatus.ERROR, e.getMessage());
+			log.error("Failed to post to restful service", e);
+			restfulTask.setStatus(TaskStatus.ERROR, e.getMessage());
 		}
-		dao.update(task);
-		return new AsyncResult<Integer>(task.getId());
+		dao.update(restfulTask);
+		return new AsyncResult<Integer>(restfulTask.getId());
 	}
 	
 	public class RestTask {
-		private Integer remoteId;
+		private UUID remoteId;
 		
-		public RestTask(Integer remoteId) {
+		public RestTask(UUID remoteId) {
 			this.remoteId = remoteId;
 		}
 
-		public Integer getRemoteId() {
+		public UUID getRemoteId() {
 			return remoteId;
 		}
 
-		public void setRemoteId(Integer remoteId) {
+		public void setRemoteId(UUID remoteId) {
 			this.remoteId = remoteId;
 		}
 	}

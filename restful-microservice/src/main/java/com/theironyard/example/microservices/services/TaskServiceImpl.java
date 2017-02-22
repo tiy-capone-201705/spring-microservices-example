@@ -1,5 +1,8 @@
 package com.theironyard.example.microservices.services;
 
+import java.util.List;
+import java.util.UUID;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
@@ -15,7 +18,7 @@ public class TaskServiceImpl implements TaskService {
 		this.factory = factory;
 	}
 	
-	public Task handleTaskAsync(Integer remoteId) {
+	public Task handleTaskAsync(UUID remoteId) {
 		EntityManager manager = factory.createEntityManager();
 		manager.getTransaction().begin();
 		Task task = manager.merge(new Task(remoteId));
@@ -29,5 +32,30 @@ public class TaskServiceImpl implements TaskService {
 		Task task = manager.find(Task.class, id);
 		manager.close();
 		return task;
+	}
+	
+	public void completeTask(Integer id) {
+		EntityManager manager = factory.createEntityManager();
+		manager.getTransaction().begin();
+		Task task = manager.find(Task.class, id);
+		task.setDone(true);
+		manager.getTransaction().commit();
+		manager.close();
+	}
+
+	@Override
+	public List<Task> getCompletedTasks() {
+		EntityManager manager = factory.createEntityManager();
+		return manager
+				.createQuery("from Task where done = true", Task.class)
+				.getResultList();
+	}
+
+	@Override
+	public List<Task> getIncompleteTasks() {
+		EntityManager manager = factory.createEntityManager();
+		return manager
+				.createQuery("from Task where done = false", Task.class)
+				.getResultList();
 	}
 }

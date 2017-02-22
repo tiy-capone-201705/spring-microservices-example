@@ -18,6 +18,9 @@ public class Task {
 	private Integer id;
 	
 	@Column(nullable=false)
+	private Integer duration;
+	
+	@Column(nullable=false)
 	private UUID remoteId;
 	
 	private Boolean done;
@@ -30,9 +33,10 @@ public class Task {
 		done = false;
 	}
 	
-	public Task(UUID remoteId) {
+	public Task(UUID remoteId, Integer duration) {
 		this();
 		this.remoteId = remoteId;
+		this.duration = duration;
 	}
 	
 	public Integer getId() {
@@ -41,16 +45,25 @@ public class Task {
 	public void setId(Integer id) {
 		this.id = id;
 	}
+	
 	public UUID getRemoteId() {
 		return remoteId;
 	}
 	public void setRemoteId(UUID remoteId) {
 		this.remoteId = remoteId;
 	}
+	
 	public Boolean getDone() {
 		return done != null && done;
 	}
 	public void setDone(Boolean done) {
 		this.done = done;
+	}
+
+	public Integer getDuration() {
+		return duration;
+	}
+	public void setDuration(Integer duration) {
+		this.duration = duration;
 	}
 }
