@@ -18,6 +18,9 @@ public class RestTaskStatusUpdateStrategyImpl implements TaskStatusUpdateStrateg
 	public void visit(ImmediateTask task) {}
 	
 	@Override
+	public void visit(MqTask task) {}
+	
+	@Override
 	public void visit(RestfulTask task) {
 		log.info("Checking " + task);
 		String url = task.getRestStatusUrl();

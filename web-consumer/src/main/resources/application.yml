@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/microweb
-    # url: jdbc:h2:mem:testdb
+    # url: jdbc:h2:mem:microweb
   jpa:
     hibernate:
       ddl-auto: create
@@ -14,3 +14,6 @@ services:
     server: http://localhost:10001
     createPath: /tasks
     unapprovedListPath: /tasks?done=false
+  mq:
+    newTaskTopic: tcp://localhost:5556
+    updatedTaskTopic: tcp://localhost:5557

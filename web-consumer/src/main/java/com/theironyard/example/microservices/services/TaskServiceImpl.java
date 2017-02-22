@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.stereotype.Service;
 
 import com.theironyard.example.microservices.models.ImmediateTask;
+import com.theironyard.example.microservices.models.MqTask;
 import com.theironyard.example.microservices.models.RestTaskStatusUpdateStrategyImpl;
 import com.theironyard.example.microservices.models.RestfulTask;
 import com.theironyard.example.microservices.models.Task;
@@ -24,11 +25,13 @@ public class TaskServiceImpl implements TaskService {
 	private Log log;
 	private TaskDaoFactory factory;
 	private ServicesConfigurationService servicesConfig;
+	private MqTaskPublisher publisher;
 	
-	public TaskServiceImpl(TaskDaoFactory factory, ServicesConfigurationService servicesConfig) {
+	public TaskServiceImpl(TaskDaoFactory factory, ServicesConfigurationService servicesConfig, MqTaskPublisher publisher) {
 		this.factory = factory;
 		this.servicesConfig = servicesConfig;
 		log = LogFactory.getLog(TaskServiceImpl.class);
+		this.publisher = publisher;
 	}
 	
 	public void save(Task task) {
@@ -43,6 +46,7 @@ public class TaskServiceImpl implements TaskService {
 		case BOTH:
 			break;
 		case EVENTED:
+			newTask = new MqTask(name, description, amount);
 			break;
 		case NONE:
 			newTask = new ImmediateTask(name, description, amount);
@@ -62,6 +66,10 @@ public class TaskServiceImpl implements TaskService {
 					break;
 				} catch (InterruptedException ie) {}
 			}
+		}
+		
+		if (type.equals(TaskType.BOTH) || type.equals(TaskType.EVENTED)) {
+			publisher.publishNewTask((MqTask) savedTask);
 		}
 		
 		if (type.equals(TaskType.NONE)) {

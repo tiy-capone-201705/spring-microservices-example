@@ -5,4 +5,7 @@ public interface ServicesConfigurationService {
 	String restUnapprovedPath();
 	String restAbsoluteFromRelative(String path);
 	String restAbsoluteApprovalUrl(Integer id);
+	
+	String mqNewTaskTopic();
+	String mqUpdatedTaskTopic();
 }

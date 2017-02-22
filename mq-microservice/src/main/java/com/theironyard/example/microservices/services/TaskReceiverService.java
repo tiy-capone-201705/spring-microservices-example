@@ -1,5 +1,5 @@
 package com.theironyard.example.microservices.services;
 
-public interface TaskUpdaterService {
+public interface TaskReceiverService {
 	void run();
 }
