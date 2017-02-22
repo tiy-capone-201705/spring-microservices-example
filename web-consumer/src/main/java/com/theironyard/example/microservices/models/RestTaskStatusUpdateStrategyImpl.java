@@ -15,22 +15,23 @@ public class RestTaskStatusUpdateStrategyImpl implements TaskStatusUpdateStrateg
 	}
 	
 	@Override
-	public void getUpdateFor(Task task) {
+	public void visit(ImmediateTask task) {}
+	
+	@Override
+	public void visit(RestfulTask task) {
 		log.info("Checking " + task);
-		System.out.println("Checking " + task);
-		if (!task.dependsOn(TaskType.RESTFUL)) {
-			return;
-		}
 		String url = task.getRestStatusUrl();
-		RestTemplate template = new RestTemplate();
-		try {
-			Boolean complete = template.getForObject(url, Boolean.class, new HttpHeaders());
-			log.info("Got response " + complete);
-			if (complete) {
-				task.restComplete();
+		if (url.length() > 0) {
+			RestTemplate template = new RestTemplate();
+			try {
+				Boolean complete = template.getForObject(url, Boolean.class, new HttpHeaders());
+				log.info("Got response " + complete);
+				if (complete) {
+					task.restComplete();
+				}
+			} catch (Exception e) {
+				log.error("Error in getting update for task.", e);
 			}
-		} catch (Exception e) {
-			log.error("Error in getting update for task.", e);
 		}
 	}
 }

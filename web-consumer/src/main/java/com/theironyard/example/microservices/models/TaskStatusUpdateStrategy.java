@@ -1,5 +1,6 @@
 package com.theironyard.example.microservices.models;
 
 public interface TaskStatusUpdateStrategy {
-	void getUpdateFor(Task task);
+	void visit(ImmediateTask task);
+	void visit(RestfulTask task);
 }

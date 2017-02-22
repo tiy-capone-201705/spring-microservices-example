@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.theironyard.example.microservices.models.Task;
 import com.theironyard.example.microservices.services.TaskService;
+import com.theironyard.example.microservices.viewModels.CreateTaskViewModel;
 
 @Controller
 @RequestMapping("/")
@@ -36,8 +37,8 @@ public class WorkController {
 	}
 	
 	@RequestMapping(value="/tasks", method=RequestMethod.POST)
-	public ResponseEntity<?> create(@RequestBody Task task) {
-		task = service.create(task.getName(), task.getAmount(), task.getDescription(), task.getType());
+	public ResponseEntity<?> create(@RequestBody CreateTaskViewModel viewModel) {
+		Task task = service.create(viewModel.getName(), viewModel.getAmount(), viewModel.getDescription(), viewModel.getType());
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Location", "/tasks/" + task.getId());
 		return new ResponseEntity<>(task, headers, HttpStatus.ACCEPTED);

@@ -34,7 +34,7 @@ public class TaskUpdaterServiceImpl implements TaskUpdaterService {
 						continue;
 					}
 					for (TaskStatusUpdateStrategy strategy : strategies) {
-						strategy.getUpdateFor(task);
+						task.accept(strategy);
 						service.save(task);
 					}
 				}
