@@ -3,6 +3,7 @@ package com.theironyard.example.microservices.models;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,7 +17,9 @@ public class Task {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Integer id;
 	
+	@Column(nullable=false)
 	private UUID remoteId;
+	
 	private Boolean done;
 	
 	@Temporal(TemporalType.TIMESTAMP)

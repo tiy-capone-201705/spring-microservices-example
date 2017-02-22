@@ -10,6 +10,7 @@ spring:
       ddl-auto: create
 
 services:
-  rest: 
+  rest:
     server: http://localhost:10001
     createPath: /tasks
+    unapprovedListPath: /tasks?done=false

@@ -80,6 +80,10 @@ public class TaskServiceImpl implements TaskService {
 		return factory.create().getById(id);
 	}
 	
+	public Task getByUuid(UUID uuid) {
+		return factory.create().getByUuid(uuid);
+	}
+	
 	@Async
 	public Future<Integer> postToRestfulService(TaskDao dao, Task task) throws InterruptedException {
 		if (!(task instanceof RestfulTask)) {

@@ -1,8 +1,7 @@
 package com.theironyard.example.microservices.services;
 
 import java.util.List;
-
-
+import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -46,5 +45,12 @@ class TaskDaoImpl implements TaskDao {
 	@Override
 	public Task getById(Integer id) {
 		return factory.createEntityManager().find(Task.class, id);
+	}
+	
+	@Override
+	public Task getByUuid(UUID uuid) {
+		return factory.createEntityManager()
+				.createQuery("from Task where uuid = '" + uuid + "'", Task.class)
+				.getSingleResult();
 	}
 }

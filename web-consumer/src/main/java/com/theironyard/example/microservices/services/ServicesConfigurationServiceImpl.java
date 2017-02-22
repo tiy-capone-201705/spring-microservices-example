@@ -9,15 +9,28 @@ public class ServicesConfigurationServiceImpl implements ServicesConfigurationSe
 	private String restServer;
 	
 	@Value("${services.rest.createPath}")
-	private String createPath;
+	private String restCreatePath;
+	
+	@Value("${services.rest.unapprovedListPath}")
+	private String restUnapprovedListPath;
 
 	@Override
 	public String restCreationPath() {
-		return restServer + createPath;
+		return restServer + restCreatePath;
+	}
+	
+	@Override
+	public String restUnapprovedPath() {
+		return restServer + restUnapprovedListPath;
 	}
 
 	@Override
 	public String restAbsoluteFromRelative(String path) {
 		return restServer + path;
+	}
+	
+	@Override
+	public String restAbsoluteApprovalUrl(Integer id) {
+		return restServer + "/tasks/" + id;
 	}
 }

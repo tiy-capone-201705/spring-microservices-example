@@ -1,9 +1,11 @@
 package com.theironyard.example.microservices.controllers;
 
+import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -13,6 +15,7 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.theironyard.example.microservices.models.Task;
@@ -51,6 +54,20 @@ public class RestMicroservice {
 		return service.getById(id).getDone();
 	}
 	
+	@OPTIONS
+	@Path("/{id}")
+	public Response entityOptions() {
+		Set<String> methods = new HashSet<String>();
+		methods.add("OPTIONS");
+		methods.add("PATCH");
+		return Response.ok()
+			.allow(methods)
+			.header("Access-Control-Allow-Origin", "http://localhost:10000")
+			.header("Access-Control-Allow-Methods", "PATCH,OPTIONS")
+			.header("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With")
+			.build();
+	}
+	
 	@PATCH
 	@Path("/{id}")
 	public Response patch(@PathParam("id") Integer id, @RequestBody List<PatchInstruction> instructions) {
@@ -66,9 +83,17 @@ public class RestMicroservice {
 					break;
 				}
 			}
-			return Response.noContent().build();
+			return Response.ok(true)
+					.header("Access-Control-Allow-Origin", "http://localhost:10000")
+					.header("Access-Control-Allow-Methods", "PATCH,OPTIONS")
+					.header("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With")
+					.build();
 		} catch (NullPointerException npe) {
-			return Response.status(404).build();
+			return Response.status(404)
+					.header("Access-Control-Allow-Origin", "http://localhost:10000")
+					.header("Access-Control-Allow-Methods", "PATCH,OPTIONS")
+					.header("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With")
+					.build();
 		}
 	}
 }
