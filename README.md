@@ -7,8 +7,14 @@ entries for the database and uncomment the H2 entries.
 
 ## Running some code
 
-Open up three command lines and run `mvn spring-boot:run` in each of the three
-subdirectories in this repository and in this order:
+Create three PostgreSql databases named:
+
+* microrest
+* microweb
+* micromq
+
+Open up three command line windows and run `mvn spring-boot:run` in each of the
+three subdirectories in this repository and in this order:
 
 1. web-consumer
 1. mq-microservice
@@ -32,13 +38,35 @@ will see:
   you'll get a task in the ERROR state.
 * **Evented**: If all goes well, you'll get an IN_PROGRESS task. Otherwise,
   you'll get a task in the ERROR state.
-* **Both**: If all goes well, you'll get an IN_PROGRESS task. Otherwise, you'll
-  get a task in the ERROR state.
 
 ## Approving Busy Work
 
-Now, open a browser to
-[`http://localhost:10000/approvals`](http://localhost:10000/approvals) and click
-the "Complete" button next to any of the incomplete tasks. This will move the
-task in the microservices' domains to the COMPLETE status. This, in turn, will
-inform the `web-consumer` application that the task has changed.
+You need to interact with the RESTful microservice to indicate that tasks have
+completed.
+
+### Get a list of unfinished tasks
+
+Open a JSON client, like Postman, and set up an HTTP request with the
+following parameters
+
+**METHOD**: GET \
+**URL**: localhost:10001/tasks
+
+### Update an unfinished task
+
+Open a JSON client, like Postman, and set up an HTTP request with the
+following parameters
+
+**METHOD**: PATCH \
+**URL**: localhost:10001/tasks/«task id» \
+**BODY TYPE**: application/json \
+**BODY**:
+```json
+[
+  {
+    "op": "add",
+    "path": "/status",
+    "value": true
+  }
+]
+```

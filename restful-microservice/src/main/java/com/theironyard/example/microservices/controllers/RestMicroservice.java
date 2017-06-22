@@ -15,7 +15,6 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.theironyard.example.microservices.models.Task;
